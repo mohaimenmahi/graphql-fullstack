@@ -1,0 +1,71 @@
+import {
+  In,
+  type DeepPartial,
+  type FindOptionsOrder,
+  type FindOptionsWhere,
+  type ObjectLiteral,
+  type Repository as OrmRepository,
+} from "typeorm";
+import type { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity.js";
+import { isUuid, withoutUndefined } from "../utils/object.js";
+import type { Entity, NewEntity, Repository } from "./repository.js";
+import { translateDbError } from "./db-errors.js";
+
+/**
+ * Generic TypeORM implementation of our Repository contract.
+ * TModel = what services see; TEntity = the decorated class TypeORM maps (a superset, e.g. + createdAt).
+ */
+export class TypeOrmRepository<
+  TModel extends Entity,
+  TEntity extends TModel & ObjectLiteral,
+> implements Repository<TModel> {
+  constructor(
+    protected readonly orm: OrmRepository<TEntity>,
+    private readonly defaultOrder: FindOptionsOrder<TEntity> = {},
+  ) {}
+
+  findAll(): Promise<TEntity[]> {
+    return this.orm.find({ order: this.defaultOrder });
+  }
+
+  async findById(id: string): Promise<TEntity | null> {
+    if (!isUuid(id)) return null; // "abc" is simply not found, not a 500
+    return this.orm.findOneBy({ id } as FindOptionsWhere<TEntity>);
+  }
+
+  async findByIds(ids: readonly string[]): Promise<TEntity[]> {
+    const valid = ids.filter(isUuid);
+    if (valid.length === 0) return [];
+    return this.orm.findBy({ id: In(valid) } as FindOptionsWhere<TEntity>);
+  }
+
+  async create(data: NewEntity<TModel>): Promise<TEntity> {
+    try {
+      return await this.orm.save(this.orm.create(data as DeepPartial<TEntity>));
+    } catch (error) {
+      throw translateDbError(error);
+    }
+  }
+
+  async update(
+    id: string,
+    patch: Partial<NewEntity<TModel>>,
+  ): Promise<TEntity | null> {
+    if (!isUuid(id)) return null;
+    const changes = withoutUndefined(patch);
+    if (Object.keys(changes).length > 0) {
+      try {
+        await this.orm.update(id, changes as QueryDeepPartialEntity<TEntity>);
+      } catch (error) {
+        throw translateDbError(error);
+      }
+    }
+    return this.findById(id);
+  }
+
+  async delete(id: string): Promise<boolean> {
+    if (!isUuid(id)) return false;
+    const result = await this.orm.delete(id);
+    return (result.affected ?? 0) > 0;
+  }
+}
