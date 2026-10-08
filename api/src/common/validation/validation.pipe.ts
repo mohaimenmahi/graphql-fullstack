@@ -11,7 +11,7 @@ import {
   ValidationPipe,
   type ValidationError as ClassValidatorError,
 } from "@nestjs/common";
-import { ValidationError } from "../errors/domain-errors.js";
+import { ValidationError } from "../errors/domain-errors";
 
 /**
  * Flatten class-validator's error TREE to { "dotted.path": [messages] }.

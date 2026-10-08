@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { withoutUndefined } from "../utils/object.js";
+import { withoutUndefined } from "@/common/utils/object";
 
 export interface Entity {
   id: string;

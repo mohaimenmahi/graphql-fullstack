@@ -3,7 +3,7 @@ import {
   unwrapResolverError,
 } from "@apollo/server/errors";
 import type { GraphQLFormattedError } from "graphql";
-import { DomainError, ValidationError } from "./domain-errors.js";
+import { DomainError, ValidationError } from "./domain-errors";
 
 /**
  * Map domain errors to stable `extensions.code` values the frontend can switch on,

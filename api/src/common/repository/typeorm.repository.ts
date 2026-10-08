@@ -7,9 +7,9 @@ import {
   type Repository as OrmRepository,
 } from "typeorm";
 import type { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity.js";
-import { isUuid, withoutUndefined } from "../utils/object.js";
-import type { Entity, NewEntity, Repository } from "./repository.js";
-import { translateDbError } from "./db-errors.js";
+import { isUuid, withoutUndefined } from "@/common/utils/object";
+import type { Entity, NewEntity, Repository } from "./repository";
+import { translateDbError } from "./db-errors";
 
 /**
  * Generic TypeORM implementation of our Repository contract.

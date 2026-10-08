@@ -5,7 +5,7 @@
 
 import { Catch } from "@nestjs/common";
 import type { GqlExceptionFilter } from "@nestjs/graphql";
-import { DomainError } from "./domain-errors.js";
+import { DomainError } from "./domain-errors";
 
 /**
  * Domain errors are expected outcomes (bad input, missing entity), not crashes.

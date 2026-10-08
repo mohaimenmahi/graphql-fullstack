@@ -1,5 +1,5 @@
 import DataLoader from "dataloader";
-import { NotFoundError } from "../errors/domain-errors.js";
+import { NotFoundError } from "@common/errors/domain-errors";
 
 export function mapToKeys<K, V>(
   keys: readonly K[],

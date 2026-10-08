@@ -1,5 +1,5 @@
 import { QueryFailedError } from "typeorm";
-import { ConflictError } from "../errors/domain-errors.js";
+import { ConflictError } from "@/common/errors/domain-errors";
 
 /** Postgres SQLSTATE codes we translate. Full list: postgresql.org/docs/current/errcodes-appendix.html */
 const UNIQUE_VIOLATION = "23505";
