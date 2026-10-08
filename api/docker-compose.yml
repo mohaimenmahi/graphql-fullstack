@@ -1,13 +1,3 @@
-# DEVELOPMENT. Postgres is yours — this file only connects to it.
-#
-# One-time setup (shared by every project that talks to the same Postgres):
-#   docker network create library-net
-#   docker network connect library-net <your-postgres-container>
-#
-#   cp .env.example .env
-#   docker compose up --build --watch     # Ctrl-C stops it
-#
-# Production: docker-compose.prod.yml
 name: api-nest
 
 services:
