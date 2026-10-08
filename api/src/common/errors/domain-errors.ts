@@ -5,7 +5,7 @@ export abstract class DomainError extends Error {
 export class NotFoundError extends DomainError {
   readonly code = "NOT_FOUND";
 
-  constructor(entity: string, id: string) {
+  constructor(entity: string, id: number | string) {
     super(`${entity} with id "${id}" was not found`);
     this.name = "NotFoundError";
   }

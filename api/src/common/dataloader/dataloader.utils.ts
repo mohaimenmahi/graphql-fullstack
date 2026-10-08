@@ -1,5 +1,5 @@
 import DataLoader from "dataloader";
-import { NotFoundError } from "@common/errors/domain-errors";
+import { NotFoundError } from "@/common/errors/domain-errors";
 
 export function mapToKeys<K, V>(
   keys: readonly K[],
@@ -26,10 +26,10 @@ export function groupToKeys<K, V>(
   return keys.map((key) => groups.get(key) ?? []);
 }
 
-export function byIdLoader<V extends { id: string }>(
+export function byIdLoader<V extends { id: number }>(
   entity: string,
-  fetch: (ids: readonly string[]) => Promise<V[]>,
-): DataLoader<string, V> {
+  fetch: (ids: readonly number[]) => Promise<V[]>,
+): DataLoader<number, V> {
   return new DataLoader(async (ids) =>
     mapToKeys(
       ids,
@@ -41,10 +41,10 @@ export function byIdLoader<V extends { id: string }>(
 }
 
 export function groupLoader<Row, V = Row>(
-  fetch: (keys: readonly string[]) => Promise<Row[]>,
-  keyOf: (row: Row) => string,
+  fetch: (keys: readonly number[]) => Promise<Row[]>,
+  keyOf: (row: Row) => number,
   select: (row: Row) => V = (row) => row as unknown as V,
-): DataLoader<string, V[]> {
+): DataLoader<number, V[]> {
   return new DataLoader(async (keys) =>
     groupToKeys(keys, await fetch(keys), keyOf).map((rows) => rows.map(select)),
   );

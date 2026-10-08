@@ -14,5 +14,5 @@ export class Book {
   @Field(() => Int, { nullable: true })
   publishedYear: number | null;
 
-  autoherId: string; // the stored foreign key, not in schema as a field.
+  authorId: number; // the stored foreign key, not in schema as a field.
 }

@@ -11,6 +11,6 @@ export class Genre {
 
 /** One row of the book_genres join table for many to many relationship (not a GraphQL type). */
 export interface BookGenreLink {
-  bookId: string;
-  genreId: string;
+  bookId: number;
+  genreId: number;
 }

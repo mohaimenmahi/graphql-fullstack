@@ -1,37 +1,38 @@
-import { randomUUID } from "node:crypto";
 import { withoutUndefined } from "@/common/utils/object";
 
 export interface Entity {
-  id: string;
+  id: number;
 }
 
 export type NewEntity<T> = Omit<T, "id" | "createdAt">;
 
 export interface Repository<T extends Entity> {
   findAll(): Promise<T[]>;
-  findById(id: string): Promise<T | null>;
-  findByIds(ids: readonly string[]): Promise<T[]>;
+  findById(id: number): Promise<T | null>;
+  findByIds(ids: readonly number[]): Promise<T[]>;
   create(data: NewEntity<T>): Promise<T>;
-  update(id: string, patch: Partial<NewEntity<T>>): Promise<T | null>;
-  delete(id: string): Promise<boolean>;
+  update(id: number, patch: Partial<NewEntity<T>>): Promise<T | null>;
+  delete(id: number): Promise<boolean>;
 }
 
 // Implementation for unit tests.
 export class InMemoryRepository<T extends Entity> implements Repository<T> {
-  protected readonly items = new Map<string, T>();
+  protected readonly items = new Map<number, T>();
+  private lastId = 0;
 
-  constructor(private readonly generateId: () => string = randomUUID) {}
+  // Mirrors a SERIAL column: ids start at 1 and only go up.
+  constructor(private readonly generateId: () => number = () => ++this.lastId) {}
 
   async findAll(): Promise<T[]> {
     return this.filter(() => true);
   }
 
-  async findById(id: string): Promise<T | null> {
+  async findById(id: number): Promise<T | null> {
     const item = this.items.get(id);
     return item ? structuredClone(item) : null;
   }
 
-  async findByIds(ids: readonly string[]): Promise<T[]> {
+  async findByIds(ids: readonly number[]): Promise<T[]> {
     return this.filter((item) => ids.includes(item.id));
   }
 
@@ -46,7 +47,7 @@ export class InMemoryRepository<T extends Entity> implements Repository<T> {
     return structuredClone(item);
   }
 
-  async update(id: string, patch: Partial<NewEntity<T>>): Promise<T | null> {
+  async update(id: number, patch: Partial<NewEntity<T>>): Promise<T | null> {
     const existing = this.items.get(id);
     if (!existing) return null;
     const updated = { ...existing, ...withoutUndefined(patch), id } as T;
@@ -54,7 +55,7 @@ export class InMemoryRepository<T extends Entity> implements Repository<T> {
     return structuredClone(updated);
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(id: number): Promise<boolean> {
     return this.items.delete(id);
   }
 

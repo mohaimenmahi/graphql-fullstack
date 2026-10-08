@@ -7,7 +7,7 @@ import {
   type Repository as OrmRepository,
 } from "typeorm";
 import type { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity.js";
-import { isUuid, withoutUndefined } from "@/common/utils/object";
+import { isValidId, withoutUndefined } from "@/common/utils/object";
 import type { Entity, NewEntity, Repository } from "./repository";
 import { translateDbError } from "./db-errors";
 
@@ -28,13 +28,13 @@ export class TypeOrmRepository<
     return this.orm.find({ order: this.defaultOrder });
   }
 
-  async findById(id: string): Promise<TEntity | null> {
-    if (!isUuid(id)) return null; // "abc" is simply not found, not a 500
+  async findById(id: number): Promise<TEntity | null> {
+    if (!isValidId(id)) return null; // -1 or 1e12 is simply not found, not a 500
     return this.orm.findOneBy({ id } as FindOptionsWhere<TEntity>);
   }
 
-  async findByIds(ids: readonly string[]): Promise<TEntity[]> {
-    const valid = ids.filter(isUuid);
+  async findByIds(ids: readonly number[]): Promise<TEntity[]> {
+    const valid = ids.filter(isValidId);
     if (valid.length === 0) return [];
     return this.orm.findBy({ id: In(valid) } as FindOptionsWhere<TEntity>);
   }
@@ -48,10 +48,10 @@ export class TypeOrmRepository<
   }
 
   async update(
-    id: string,
+    id: number,
     patch: Partial<NewEntity<TModel>>,
   ): Promise<TEntity | null> {
-    if (!isUuid(id)) return null;
+    if (!isValidId(id)) return null;
     const changes = withoutUndefined(patch);
     if (Object.keys(changes).length > 0) {
       try {
@@ -63,8 +63,8 @@ export class TypeOrmRepository<
     return this.findById(id);
   }
 
-  async delete(id: string): Promise<boolean> {
-    if (!isUuid(id)) return false;
+  async delete(id: number): Promise<boolean> {
+    if (!isValidId(id)) return false;
     const result = await this.orm.delete(id);
     return (result.affected ?? 0) > 0;
   }

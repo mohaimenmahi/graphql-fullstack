@@ -9,23 +9,23 @@ go under the decorator, same as the IsNotFutureYear decorator. Infact, it does n
 so we need to implement it by taking (target, property) parameters
 */
 export function Trim(): PropertyDecorator {
-  return Transform(({ value }: { value: unknown }) => {
-    typeof value === "string" ? value.trim() : value;
-  }) as PropertyDecorator;
+  return Transform(({ value }: { value: unknown }) =>
+    typeof value === "string" ? value.trim() : value,
+  ) as PropertyDecorator;
 }
 
 // Trim and lowercase (emails)
 export function Normalize(): PropertyDecorator {
-  return Transform(({ value }: { value: unknown }) => {
-    typeof value === "string" ? value.trim().toLowerCase() : value;
-  }) as PropertyDecorator;
+  return Transform(({ value }: { value: unknown }) =>
+    typeof value === "string" ? value.trim().toLowerCase() : value,
+  ) as PropertyDecorator;
 }
 
 // Remove duplicates from an array input (e.g: gereIds)
 export function Unique(): PropertyDecorator {
-  return Transform({ value }:  { value: unknown } => {
-    Array.isArray(value) ? [...new Set(value)] : value;
-  }) as PropertyDecorator;
+  return Transform(({ value }: { value: unknown }) =>
+    Array.isArray(value) ? [...new Set(value)] : value,
+  ) as PropertyDecorator;
 }
 
 // Year must not be in future
@@ -37,9 +37,8 @@ export function IsNotFutureYear(options?: ValidationOptions): PropertyDecorator 
       propertyName: propertyName as string,
       options: { message: 'Year cannnot be in the future...', ...options},
       validator:  {
-        validate: (value, unknown) => {
+        validate: (value: unknown) =>
           typeof value !== 'number' || value <= new Date().getFullYear(),
-        }
       }
     })
   }

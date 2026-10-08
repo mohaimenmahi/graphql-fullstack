@@ -1,21 +1,16 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-} from "typeorm";
-import type { Author } from "@/models/author.model";
-import { BaseEntity } from "@/common/entities/base.entity";
+import { Column, Entity } from 'typeorm';
+import type { Author } from '@/authors/models/author.model';
+import { BaseEntity } from '@/common/entities/base.entity';
 
 /**
  * Every @Column states its `type` explicitly, so we never depend on emitDecoratorMetadata
  * (which esbuild-based tools like tsx can't emit).
  */
-@Entity({ name: "authors" })
+@Entity({ name: 'authors' })
 export class AuthorEntity extends BaseEntity implements Author {
-  @Column({ type: "varchar", length: 100 })
+  @Column({ type: 'varchar', length: 100 })
   name: string;
 
-  @Column({ type: "text", nullable: true })
+  @Column({ type: 'text', nullable: true })
   bio: string | null;
 }

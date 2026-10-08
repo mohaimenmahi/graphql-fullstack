@@ -21,13 +21,13 @@ export class Review {
   @Field(() => GraphQLISODateTime)
   createdAt: Date;
 
-  bookId: string;
-  memberId: string;
+  bookId: number;
+  memberId: number;
 }
 
 /** Aggregate per book, computed in SQL (AVG / COUNT ... GROUP BY). */
 export interface RatingStats {
-  bookId: string;
+  bookId: number;
   average: number | null;
   count: number;
 }
