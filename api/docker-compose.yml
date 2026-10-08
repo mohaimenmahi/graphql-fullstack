@@ -1,0 +1,49 @@
+# DEVELOPMENT. Postgres is yours — this file only connects to it.
+#
+# One-time setup (shared by every project that talks to the same Postgres):
+#   docker network create library-net
+#   docker network connect library-net <your-postgres-container>
+#
+#   cp .env.example .env
+#   docker compose up --build --watch     # Ctrl-C stops it
+#
+# Production: docker-compose.prod.yml
+name: api-nest
+
+services:
+  api-nest:
+    build:
+      context: .
+      target: development
+    # Explicit tags so the dev and prod builds never overwrite each other's image.
+    image: api-nest:dev
+    env_file: .env
+    ports:
+      - "127.0.0.1:4001:4000"
+    extra_hosts:
+      # Lets DATABASE_URL use host.docker.internal on Linux too (built in on Docker Desktop).
+      - "host.docker.internal:host-gateway"
+    init: true
+    # Compose Watch (`--watch`): mirrors host edits into the container.
+    develop:
+    # develop attribute (specifically develop: watch) is a built-in feature designed to optimize your local development "inner loop". It allows Docker Compose to automatically monitor your local source code for changes and update your running containers in real-time, eliminating the need to manually run docker compose up --build every time you modify a file
+      watch:
+        # Source edits are copied in; `nest start --watch` recompiles and restarts.
+        - action: sync
+          path: ./src
+          target: /app/src
+        # Dependency or build-config changes need a fresh image (npm ci runs again).
+        - action: rebuild
+          path: package.json
+        - action: rebuild
+          path: package-lock.json
+        - action: rebuild
+          path: tsconfig.json
+        - action: rebuild
+          path: nest-cli.json
+    networks:
+      - library-net
+
+networks:
+  library-net:
+    external: true

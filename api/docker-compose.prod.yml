@@ -1,0 +1,32 @@
+# PRODUCTION. Postgres is yours — this file only connects to it.
+#
+#   cp .env.example .env
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Same project name and service as docker-compose.yml, so starting one replaces the other.
+name: api-nest
+
+services:
+  api-nest:
+    build:
+      context: .
+      target: production
+    image: api-nest:prod
+    env_file: .env
+    ports:
+      - "4001:4000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - library-net
+
+networks:
+  library-net:
+    external: true

@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage
+schema.graphql
+.env
+*.log
+.git
+Dockerfile
+.dockerignore
+docker-compose*.yml
